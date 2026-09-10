@@ -1,0 +1,1438 @@
+ ============================================================
+-- LABORATORIO COMPLETO DE PL/SQL
+-- BASADO EXCLUSIVAMENTE EN EL GLOSARIO
+-- ============================================================
+--
+-- IMPORTANTE
+-- Este archivo NO crea tablas ni inserta datos.
+-- Utiliza las tablas que aparecen como ejemplo en el glosario:
+--
+-- EMPLEADO
+-- PRODUCTO
+-- FABRICANTE
+-- ESTUDIANTE
+-- ASIGNATURA
+--
+-- El objetivo es practicar los conceptos del glosario.
+--
+-- ============================================================
+-- 1. PL/SQL - BLOQUE ANONIMO
+-- ============================================================
+--
+-- PL/SQL combina SQL con logica de programacion.
+--
+-- Estructura:
+-- DECLARE
+-- BEGIN
+-- END;
+-- /
+--
+-- ============================================================
+
+DECLARE
+    v_nombre VARCHAR2(50);
+BEGIN
+    v_nombre := 'Juan';
+    DBMS_OUTPUT.PUT_LINE(v_nombre);
+END;
+/
+
+-- ============================================================
+-- 2. DECLARE - VARIABLES
+-- ============================================================
+
+DECLARE
+    v_nombre VARCHAR2(50);
+    v_edad NUMBER;
+BEGIN
+    v_nombre := 'Juan';
+    v_edad := 25;
+
+    DBMS_OUTPUT.PUT_LINE('Nombre: ' || v_nombre);
+    DBMS_OUTPUT.PUT_LINE('Edad: ' || v_edad);
+END;
+/
+
+-- ============================================================
+-- 3. VARIABLE DE SUSTITUCION &
+-- ============================================================
+--
+-- Oracle solicita el valor al ejecutar.
+--
+-- ============================================================
+
+DECLARE
+    v_codigo NUMBER := &codigo;
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Codigo ingresado: ' || v_codigo);
+END;
+/
+
+-- ============================================================
+-- 4. CONCATENACION ||
+-- ============================================================
+
+DECLARE
+    v_nombre VARCHAR2(50) := 'Juan';
+    v_sueldo NUMBER := 700000;
+BEGIN
+    DBMS_OUTPUT.PUT_LINE(
+        'Nombre: ' || v_nombre || ' - Sueldo: ' || v_sueldo
+    );
+END;
+/
+
+-- ============================================================
+-- 5. IF
+-- ============================================================
+
+DECLARE
+    v_sueldo NUMBER := 700000;
+BEGIN
+    IF v_sueldo >= 700000 THEN
+        DBMS_OUTPUT.PUT_LINE('Sueldo alto');
+    END IF;
+END;
+/
+
+-- ============================================================
+-- 6. IF + ELSE
+-- ============================================================
+
+DECLARE
+    v_edad NUMBER := 20;
+BEGIN
+    IF v_edad >= 18 THEN
+        DBMS_OUTPUT.PUT_LINE('Adulto');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Menor');
+    END IF;
+END;
+/
+
+-- ============================================================
+-- 7. IF + ELSIF + ELSE
+-- ============================================================
+
+DECLARE
+    v_nota NUMBER := 5;
+BEGIN
+    IF v_nota >= 6 THEN
+        DBMS_OUTPUT.PUT_LINE('Resultado: Excelente');
+    ELSIF v_nota >= 4 THEN
+        DBMS_OUTPUT.PUT_LINE('Resultado: Aprobado');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Resultado: Reprobado');
+    END IF;
+END;
+/
+
+-- ============================================================
+-- 8. CASE
+-- ============================================================
+
+DECLARE
+    v_nota NUMBER := 5;
+BEGIN
+    CASE
+        WHEN v_nota >= 6 THEN
+            DBMS_OUTPUT.PUT_LINE('Resultado: Excelente');
+
+        WHEN v_nota >= 4 THEN
+            DBMS_OUTPUT.PUT_LINE('Resultado: Aprobado');
+
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('Resultado: Reprobado');
+    END CASE;
+END;
+/
+
+-- ============================================================
+-- 9. RECORD
+-- ============================================================
+
+DECLARE
+
+    TYPE estudiante_record IS RECORD (
+        id NUMBER,
+        nombre VARCHAR2(50),
+        edad NUMBER,
+        nota NUMBER
+    );
+
+    v_estudiante estudiante_record;
+
+BEGIN
+
+    v_estudiante.id := 1;
+    v_estudiante.nombre := 'Juan';
+    v_estudiante.edad := 20;
+    v_estudiante.nota := 6;
+
+    DBMS_OUTPUT.PUT_LINE('ID: ' || v_estudiante.id);
+    DBMS_OUTPUT.PUT_LINE('Nombre: ' || v_estudiante.nombre);
+    DBMS_OUTPUT.PUT_LINE('Edad: ' || v_estudiante.edad);
+    DBMS_OUTPUT.PUT_LINE('Nota: ' || v_estudiante.nota);
+
+END;
+/
+
+-- ============================================================
+-- 10. TYPE IS RECORD
+-- ============================================================
+
+DECLARE
+
+    TYPE empleado_record IS RECORD (
+        id NUMBER,
+        nombre VARCHAR2(50),
+        sueldo NUMBER
+    );
+
+    v_empleado empleado_record;
+
+BEGIN
+
+    v_empleado.id := 1;
+    v_empleado.nombre := 'Ana';
+    v_empleado.sueldo := 850000;
+
+    DBMS_OUTPUT.PUT_LINE(
+        'Empleado: ' || v_empleado.nombre ||
+        ' - Sueldo: ' || v_empleado.sueldo
+    );
+
+END;
+/
+
+-- ============================================================
+-- 11. %TYPE
+-- ============================================================
+--
+-- La variable toma el mismo tipo de la columna.
+--
+-- ============================================================
+
+DECLARE
+
+    v_sueldo EMPLEADO.SUELDO%TYPE;
+
+BEGIN
+
+    v_sueldo := 700000;
+
+    DBMS_OUTPUT.PUT_LINE(
+        'Sueldo: ' || v_sueldo
+    );
+
+END;
+/
+
+-- ============================================================
+-- 12. %ROWTYPE
+-- ============================================================
+--
+-- La variable representa una fila completa de la tabla.
+--
+-- ============================================================
+
+DECLARE
+
+    v_empleado EMPLEADO%ROWTYPE;
+
+BEGIN
+
+    SELECT *
+    INTO v_empleado
+    FROM EMPLEADO
+    WHERE id_empleado = 1;
+
+    DBMS_OUTPUT.PUT_LINE(
+        'Nombre: ' || v_empleado.nombre
+    );
+
+    DBMS_OUTPUT.PUT_LINE(
+        'Sueldo: ' || v_empleado.sueldo
+    );
+
+END;
+/
+
+-- ============================================================
+-- 13. SELECT INTO
+-- ============================================================
+
+DECLARE
+
+    v_sueldo EMPLEADO.SUELDO%TYPE;
+
+BEGIN
+
+    SELECT sueldo
+    INTO v_sueldo
+    FROM empleado
+    WHERE id_empleado = 1;
+
+    DBMS_OUTPUT.PUT_LINE(
+        'Sueldo: ' || v_sueldo
+    );
+
+END;
+/
+
+-- ============================================================
+-- 14. SELECT INTO + RECORD
+-- ============================================================
+
+DECLARE
+
+    v_empleado EMPLEADO%ROWTYPE;
+
+BEGIN
+
+    SELECT *
+    INTO v_empleado
+    FROM empleado
+    WHERE id_empleado = 1;
+
+    DBMS_OUTPUT.PUT_LINE(
+        'Nombre: ' || v_empleado.nombre
+    );
+
+    DBMS_OUTPUT.PUT_LINE(
+        'Sueldo: ' || v_empleado.sueldo
+    );
+
+END;
+/
+
+-- ============================================================
+-- 15. JOIN
+-- ============================================================
+--
+-- JOIN combina informacion de tablas relacionadas.
+--
+-- ============================================================
+
+SELECT
+    p.codigo,
+    p.nombre,
+    p.precio,
+    f.nombre_fabricante
+FROM producto p
+JOIN fabricante f
+    ON p.codigo_fabricante = f.codigo_fabricante;
+
+-- ============================================================
+-- 16. ON
+-- ============================================================
+--
+-- ON indica la condicion que relaciona las tablas.
+--
+-- ============================================================
+
+SELECT
+    p.nombre,
+    f.nombre_fabricante
+FROM producto p
+JOIN fabricante f
+    ON p.codigo_fabricante = f.codigo_fabricante;
+
+-- ============================================================
+-- 17. LEFT JOIN
+-- ============================================================
+--
+-- LEFT JOIN mantiene todas las filas de la tabla izquierda.
+--
+-- ============================================================
+
+SELECT
+    e.nombre,
+    a.nombre_asignatura
+FROM estudiante e
+LEFT JOIN asignatura a
+    ON e.cod_asignatura = a.cod_asignatura;
+
+-- ============================================================
+-- 18. WHERE
+-- ============================================================
+
+SELECT
+    codigo,
+    nombre,
+    precio
+FROM producto
+WHERE precio >= 50000;
+
+-- ============================================================
+-- 19. ORDER BY ASC
+-- ============================================================
+
+SELECT
+    codigo,
+    nombre,
+    precio
+FROM producto
+ORDER BY precio ASC;
+
+-- ============================================================
+-- 20. ORDER BY DESC
+-- ============================================================
+
+SELECT
+    codigo,
+    nombre,
+    precio
+FROM producto
+ORDER BY precio DESC;
+
+-- ============================================================
+-- 21. NVL
+-- ============================================================
+
+SELECT
+    e.nombre,
+    NVL(a.nombre_asignatura, 'SIN ASIGNATURA')
+FROM estudiante e
+LEFT JOIN asignatura a
+    ON e.cod_asignatura = a.cod_asignatura;
+
+-- ============================================================
+-- 22. COUNT
+-- ============================================================
+
+SELECT COUNT(*)
+FROM empleado;
+
+-- ============================================================
+-- 23. SUM
+-- ============================================================
+
+SELECT SUM(sueldo)
+FROM empleado;
+
+-- ============================================================
+-- 24. AVG
+-- ============================================================
+
+SELECT AVG(sueldo)
+FROM empleado;
+
+-- ============================================================
+-- 25. MAX
+-- ============================================================
+
+SELECT MAX(sueldo)
+FROM empleado;
+
+-- ============================================================
+-- 26. MIN
+-- ============================================================
+
+SELECT MIN(sueldo)
+FROM empleado;
+
+-- ============================================================
+-- 27. CONTADOR
+-- ============================================================
+
+DECLARE
+
+    v_contador NUMBER := 0;
+
+BEGIN
+
+    FOR registro IN (
+        SELECT *
+        FROM empleado
+    )
+    LOOP
+
+        v_contador := v_contador + 1;
+
+        DBMS_OUTPUT.PUT_LINE(
+            'Registro: ' || v_contador
+        );
+
+    END LOOP;
+
+END;
+/
+
+-- ============================================================
+-- 28. ACUMULADOR
+-- ============================================================
+
+DECLARE
+
+    v_suma NUMBER := 0;
+
+BEGIN
+
+    FOR registro IN (
+        SELECT *
+        FROM empleado
+    )
+    LOOP
+
+        v_suma := v_suma + registro.sueldo;
+
+    END LOOP;
+
+    DBMS_OUTPUT.PUT_LINE(
+        'Suma total: ' || v_suma
+    );
+
+END;
+/
+
+-- ============================================================
+-- 29. PROMEDIO
+-- ============================================================
+
+DECLARE
+
+    v_suma NUMBER := 0;
+    v_contador NUMBER := 0;
+    v_promedio NUMBER;
+
+BEGIN
+
+    FOR registro IN (
+        SELECT *
+        FROM empleado
+    )
+    LOOP
+
+        v_suma := v_suma + registro.sueldo;
+        v_contador := v_contador + 1;
+
+    END LOOP;
+
+    IF v_contador > 0 THEN
+        v_promedio := v_suma / v_contador;
+    END IF;
+
+    DBMS_OUTPUT.PUT_LINE(
+        'Promedio: ' || v_promedio
+    );
+
+END;
+/
+
+-- ============================================================
+-- 30. CURSOR EXPLICITO
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_empleados IS
+        SELECT *
+        FROM empleado;
+
+BEGIN
+
+    FOR registro IN c_empleados
+    LOOP
+
+        DBMS_OUTPUT.PUT_LINE(
+            'Empleado: ' || registro.nombre
+        );
+
+    END LOOP;
+
+END;
+/
+
+-- ============================================================
+-- 31. FOR ... IN CURSOR
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_productos IS
+        SELECT codigo, nombre, precio
+        FROM producto
+        ORDER BY precio;
+
+BEGIN
+
+    FOR registro IN c_productos
+    LOOP
+
+        DBMS_OUTPUT.PUT_LINE(
+            'Producto: ' ||
+            registro.nombre ||
+            ' - Precio: ' ||
+            registro.precio
+        );
+
+    END LOOP;
+
+END;
+/
+
+-- ============================================================
+-- 32. REGISTRO DEL CURSOR
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_productos IS
+        SELECT codigo, nombre, precio
+        FROM producto;
+
+BEGIN
+
+    FOR registro IN c_productos
+    LOOP
+
+        DBMS_OUTPUT.PUT_LINE(
+            'Codigo: ' || registro.codigo
+        );
+
+        DBMS_OUTPUT.PUT_LINE(
+            'Nombre: ' || registro.nombre
+        );
+
+        DBMS_OUTPUT.PUT_LINE(
+            'Precio: ' || registro.precio
+        );
+
+    END LOOP;
+
+END;
+/
+
+-- ============================================================
+-- 33. LOOP
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_productos IS
+        SELECT *
+        FROM producto;
+
+    v_producto PRODUCTO%ROWTYPE;
+
+BEGIN
+
+    OPEN c_productos;
+
+    LOOP
+
+        FETCH c_productos INTO v_producto;
+
+        EXIT WHEN c_productos%NOTFOUND;
+
+        DBMS_OUTPUT.PUT_LINE(
+            v_producto.nombre
+        );
+
+    END LOOP;
+
+    CLOSE c_productos;
+
+END;
+/
+
+-- ============================================================
+-- 34. OPEN
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_productos IS
+        SELECT *
+        FROM producto;
+
+BEGIN
+
+    OPEN c_productos;
+
+    CLOSE c_productos;
+
+END;
+/
+
+-- ============================================================
+-- 35. FETCH
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_productos IS
+        SELECT *
+        FROM producto;
+
+    v_producto PRODUCTO%ROWTYPE;
+
+BEGIN
+
+    OPEN c_productos;
+
+    FETCH c_productos INTO v_producto;
+
+    DBMS_OUTPUT.PUT_LINE(
+        'Producto: ' || v_producto.nombre
+    );
+
+    CLOSE c_productos;
+
+END;
+/
+
+-- ============================================================
+-- 36. EXIT
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_productos IS
+        SELECT *
+        FROM producto;
+
+    v_producto PRODUCTO%ROWTYPE;
+
+BEGIN
+
+    OPEN c_productos;
+
+    LOOP
+
+        FETCH c_productos INTO v_producto;
+
+        EXIT WHEN c_productos%NOTFOUND;
+
+        DBMS_OUTPUT.PUT_LINE(
+            v_producto.nombre
+        );
+
+    END LOOP;
+
+    CLOSE c_productos;
+
+END;
+/
+
+-- ============================================================
+-- 37. EXIT WHEN
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_productos IS
+        SELECT *
+        FROM producto;
+
+    v_producto PRODUCTO%ROWTYPE;
+
+BEGIN
+
+    OPEN c_productos;
+
+    LOOP
+
+        FETCH c_productos INTO v_producto;
+
+        EXIT WHEN c_productos%NOTFOUND;
+
+        DBMS_OUTPUT.PUT_LINE(
+            'Procesando: ' || v_producto.nombre
+        );
+
+    END LOOP;
+
+    CLOSE c_productos;
+
+END;
+/
+
+-- ============================================================
+-- 38. %NOTFOUND
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_productos IS
+        SELECT *
+        FROM producto;
+
+    v_producto PRODUCTO%ROWTYPE;
+
+BEGIN
+
+    OPEN c_productos;
+
+    LOOP
+
+        FETCH c_productos INTO v_producto;
+
+        EXIT WHEN c_productos%NOTFOUND;
+
+        DBMS_OUTPUT.PUT_LINE(
+            v_producto.nombre
+        );
+
+    END LOOP;
+
+    CLOSE c_productos;
+
+END;
+/
+
+-- ============================================================
+-- 39. CLOSE
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_productos IS
+        SELECT *
+        FROM producto;
+
+BEGIN
+
+    OPEN c_productos;
+
+    CLOSE c_productos;
+
+END;
+/
+
+-- ============================================================
+-- 40. RECORRIDO MANUAL DE CURSOR
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_productos IS
+        SELECT *
+        FROM producto;
+
+    v_producto PRODUCTO%ROWTYPE;
+
+BEGIN
+
+    OPEN c_productos;
+
+    LOOP
+
+        FETCH c_productos INTO v_producto;
+
+        EXIT WHEN c_productos%NOTFOUND;
+
+        DBMS_OUTPUT.PUT_LINE(
+            'Producto: ' || v_producto.nombre
+        );
+
+    END LOOP;
+
+    CLOSE c_productos;
+
+END;
+/
+
+-- ============================================================
+-- 41. CURSOR PARAMETRIZADO
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_producto_fabricante(
+        p_cod_fab NUMBER
+    ) IS
+        SELECT *
+        FROM producto
+        WHERE codigo_fabricante = p_cod_fab;
+
+BEGIN
+
+    NULL;
+
+END;
+/
+
+-- ============================================================
+-- 42. PARAMETRO DE CURSOR
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_productos(
+        p_codigo NUMBER
+    ) IS
+        SELECT *
+        FROM producto
+        WHERE codigo_fabricante = p_codigo;
+
+BEGIN
+
+    FOR registro IN c_productos(101)
+    LOOP
+
+        DBMS_OUTPUT.PUT_LINE(
+            registro.nombre
+        );
+
+    END LOOP;
+
+END;
+/
+
+-- ============================================================
+-- 43. OPEN CON PARAMETRO
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_productos(
+        p_codigo NUMBER
+    ) IS
+        SELECT *
+        FROM producto
+        WHERE codigo_fabricante = p_codigo;
+
+    v_producto PRODUCTO%ROWTYPE;
+    v_codigo_fabricante NUMBER := 101;
+
+BEGIN
+
+    OPEN c_productos(v_codigo_fabricante);
+
+    LOOP
+
+        FETCH c_productos INTO v_producto;
+
+        EXIT WHEN c_productos%NOTFOUND;
+
+        DBMS_OUTPUT.PUT_LINE(
+            v_producto.nombre
+        );
+
+    END LOOP;
+
+    CLOSE c_productos;
+
+END;
+/
+
+-- ============================================================
+-- 44. JOIN + CURSOR
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_productos IS
+        SELECT
+            p.codigo,
+            p.nombre,
+            p.precio,
+            f.nombre_fabricante
+        FROM producto p
+        JOIN fabricante f
+            ON p.codigo_fabricante = f.codigo_fabricante;
+
+BEGIN
+
+    FOR registro IN c_productos
+    LOOP
+
+        DBMS_OUTPUT.PUT_LINE(
+            'Producto: ' || registro.nombre
+        );
+
+        DBMS_OUTPUT.PUT_LINE(
+            'Fabricante: ' || registro.nombre_fabricante
+        );
+
+    END LOOP;
+
+END;
+/
+
+-- ============================================================
+-- 45. FILTRO DENTRO DE CURSOR
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_productos IS
+        SELECT *
+        FROM producto
+        WHERE precio >= 50000;
+
+BEGIN
+
+    FOR registro IN c_productos
+    LOOP
+
+        DBMS_OUTPUT.PUT_LINE(
+            registro.nombre
+        );
+
+    END LOOP;
+
+END;
+/
+
+-- ============================================================
+-- 46. CURSOR PARAMETRIZADO + FILTRO
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_productos(
+        p_codigo NUMBER
+    ) IS
+        SELECT *
+        FROM producto
+        WHERE codigo_fabricante = p_codigo;
+
+BEGIN
+
+    FOR registro IN c_productos(101)
+    LOOP
+
+        DBMS_OUTPUT.PUT_LINE(
+            registro.nombre
+        );
+
+    END LOOP;
+
+END;
+/
+
+-- ============================================================
+-- 47. CURSOR PARAMETRIZADO + %ROWTYPE
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_productos(
+        p_codigo NUMBER
+    ) IS
+        SELECT *
+        FROM producto
+        WHERE codigo_fabricante = p_codigo;
+
+    v_producto PRODUCTO%ROWTYPE;
+
+BEGIN
+
+    OPEN c_productos(101);
+
+    LOOP
+
+        FETCH c_productos INTO v_producto;
+
+        EXIT WHEN c_productos%NOTFOUND;
+
+        DBMS_OUTPUT.PUT_LINE(
+            v_producto.nombre
+        );
+
+    END LOOP;
+
+    CLOSE c_productos;
+
+END;
+/
+
+-- ============================================================
+-- 48. CURSOR + JOIN + WHERE
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_productos IS
+        SELECT
+            p.codigo,
+            p.nombre,
+            p.precio,
+            f.nombre_fabricante
+        FROM producto p
+        JOIN fabricante f
+            ON p.codigo_fabricante = f.codigo_fabricante
+        WHERE p.precio >= 50000;
+
+BEGIN
+
+    FOR registro IN c_productos
+    LOOP
+
+        DBMS_OUTPUT.PUT_LINE(
+            'Producto: ' || registro.nombre ||
+            ' - Fabricante: ' ||
+            registro.nombre_fabricante
+        );
+
+    END LOOP;
+
+END;
+/
+
+-- ============================================================
+-- 49. VARRAY
+-- ============================================================
+
+DECLARE
+
+    TYPE numeros IS VARRAY(5) OF NUMBER;
+
+    v_numeros numeros;
+
+BEGIN
+
+    v_numeros := numeros(10, 20, 30, 40, 50);
+
+    DBMS_OUTPUT.PUT_LINE(
+        v_numeros(1)
+    );
+
+    DBMS_OUTPUT.PUT_LINE(
+        v_numeros(2)
+    );
+
+    DBMS_OUTPUT.PUT_LINE(
+        v_numeros(3)
+    );
+
+END;
+/
+
+-- ============================================================
+-- 50. CONSTRUCTOR DE VARRAY
+-- ============================================================
+
+DECLARE
+
+    TYPE numeros IS VARRAY(5) OF NUMBER;
+
+    v_numeros numeros;
+
+BEGIN
+
+    v_numeros := numeros(10, 20, 30, 40, 50);
+
+    DBMS_OUTPUT.PUT_LINE(
+        v_numeros(5)
+    );
+
+END;
+/
+
+-- ============================================================
+-- 51. INDICE DE VARRAY
+-- ============================================================
+
+DECLARE
+
+    TYPE numeros IS VARRAY(5) OF NUMBER;
+
+    v_numeros numeros;
+
+BEGIN
+
+    v_numeros := numeros(10, 20, 30);
+
+    DBMS_OUTPUT.PUT_LINE(
+        v_numeros(1)
+    );
+
+    DBMS_OUTPUT.PUT_LINE(
+        v_numeros(2)
+    );
+
+    DBMS_OUTPUT.PUT_LINE(
+        v_numeros(3)
+    );
+
+END;
+/
+
+-- ============================================================
+-- 52. EXTEND
+-- ============================================================
+
+DECLARE
+
+    TYPE numeros IS VARRAY(5) OF NUMBER;
+
+    v_numeros numeros;
+
+BEGIN
+
+    v_numeros := numeros(10, 20, 30, 40);
+
+    v_numeros.EXTEND;
+
+    v_numeros(5) := 50;
+
+    DBMS_OUTPUT.PUT_LINE(
+        v_numeros(5)
+    );
+
+END;
+/
+
+-- ============================================================
+-- 53. LENGTH
+-- ============================================================
+
+DECLARE
+
+    v_nombre VARCHAR2(50) := 'Juan';
+
+BEGIN
+
+    IF LENGTH(v_nombre) > 4 THEN
+
+        DBMS_OUTPUT.PUT_LINE(
+            'El nombre tiene mas de 4 caracteres'
+        );
+
+    END IF;
+
+END;
+/
+
+-- ============================================================
+-- 54. DIFERENCIA ENTRE RECORD, %ROWTYPE
+--     Y REGISTRO DEL FOR
+-- ============================================================
+
+DECLARE
+
+    TYPE persona IS RECORD (
+        nombre VARCHAR2(50),
+        edad NUMBER
+    );
+
+    v_persona persona;
+
+BEGIN
+
+    v_persona.nombre := 'Juan';
+    v_persona.edad := 20;
+
+    DBMS_OUTPUT.PUT_LINE(
+        'RECORD: ' || v_persona.nombre
+    );
+
+END;
+/
+
+DECLARE
+
+    v_empleado EMPLEADO%ROWTYPE;
+
+BEGIN
+
+    SELECT *
+    INTO v_empleado
+    FROM empleado
+    WHERE id_empleado = 1;
+
+    DBMS_OUTPUT.PUT_LINE(
+        '%ROWTYPE: ' || v_empleado.nombre
+    );
+
+END;
+/
+
+DECLARE
+
+    CURSOR c_empleados IS
+        SELECT *
+        FROM empleado;
+
+BEGIN
+
+    FOR registro IN c_empleados
+    LOOP
+
+        DBMS_OUTPUT.PUT_LINE(
+            'FOR: ' || registro.nombre
+        );
+
+    END LOOP;
+
+END;
+/
+
+-- ============================================================
+-- 55. DIFERENCIA ENTRE %TYPE Y %ROWTYPE
+-- ============================================================
+
+DECLARE
+
+    v_sueldo EMPLEADO.SUELDO%TYPE;
+    v_empleado EMPLEADO%ROWTYPE;
+
+BEGIN
+
+    v_sueldo := 700000;
+
+    SELECT *
+    INTO v_empleado
+    FROM empleado
+    WHERE id_empleado = 1;
+
+    DBMS_OUTPUT.PUT_LINE(
+        '%TYPE: ' || v_sueldo
+    );
+
+    DBMS_OUTPUT.PUT_LINE(
+        '%ROWTYPE: ' || v_empleado.nombre
+    );
+
+END;
+/
+
+-- ============================================================
+-- 56. SELECT CON JOIN + CONCATENACION
+-- ============================================================
+
+SELECT
+    'Producto: ' || p.nombre ||
+    ' - Fabricante: ' || f.nombre_fabricante
+FROM producto p
+JOIN fabricante f
+    ON p.codigo_fabricante = f.codigo_fabricante;
+
+-- ============================================================
+-- 57. SELECT CON JOIN + WHERE + ORDER BY
+-- ============================================================
+
+SELECT
+    p.codigo,
+    p.nombre,
+    p.precio,
+    f.nombre_fabricante
+FROM producto p
+JOIN fabricante f
+    ON p.codigo_fabricante = f.codigo_fabricante
+WHERE p.precio >= 50000
+ORDER BY p.precio DESC;
+
+-- ============================================================
+-- 58. LEFT JOIN + NVL
+-- ============================================================
+
+SELECT
+    e.nombre,
+    NVL(a.nombre_asignatura, 'SIN ASIGNATURA')
+FROM estudiante e
+LEFT JOIN asignatura a
+    ON e.cod_asignatura = a.cod_asignatura;
+
+-- ============================================================
+-- 59. CURSOR CON JOIN + ORDER BY
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_productos IS
+        SELECT
+            p.codigo,
+            p.nombre,
+            p.precio,
+            f.nombre_fabricante
+        FROM producto p
+        JOIN fabricante f
+            ON p.codigo_fabricante = f.codigo_fabricante
+        ORDER BY p.precio;
+
+BEGIN
+
+    FOR registro IN c_productos
+    LOOP
+
+        DBMS_OUTPUT.PUT_LINE(
+            'Producto: ' || registro.nombre ||
+            ' - Precio: ' || registro.precio ||
+            ' - Fabricante: ' ||
+            registro.nombre_fabricante
+        );
+
+    END LOOP;
+
+END;
+/
+
+-- ============================================================
+-- 60. CURSOR CON FILTRO + CONTADOR + ACUMULADOR
+-- ============================================================
+
+DECLARE
+
+    CURSOR c_empleados IS
+        SELECT *
+        FROM empleado
+        WHERE sueldo >= 500000;
+
+    v_contador NUMBER := 0;
+    v_suma NUMBER := 0;
+
+BEGIN
+
+    FOR registro IN c_empleados
+    LOOP
+
+        v_contador := v_contador + 1;
+        v_suma := v_suma + registro.sueldo;
+
+        DBMS_OUTPUT.PUT_LINE(
+            'Empleado: ' || registro.nombre
+        );
+
+    END LOOP;
+
+    DBMS_OUTPUT.PUT_LINE(
+        'Cantidad: ' || v_contador
+    );
+
+    DBMS_OUTPUT.PUT_LINE(
+        'Suma: ' || v_suma
+    );
+
+END;
+/
+
+-- ============================================================
+-- 61. MAPA DE RECONOCIMIENTO
+-- ============================================================
+--
+-- Si necesitas:
+--
+-- UNA COLUMNA -> %TYPE
+-- UNA FILA COMPLETA -> %ROWTYPE
+-- AGRUPAR DATOS -> RECORD
+-- OBTENER UNA FILA -> SELECT INTO
+-- VARIAS FILAS -> CURSOR
+-- RECORRER AUTOMATICAMENTE -> FOR
+-- CONTROLAR MANUALMENTE -> OPEN / FETCH / LOOP / CLOSE
+-- FILTRAR -> WHERE
+-- ORDENAR -> ORDER BY
+-- RELACIONAR TABLAS -> JOIN
+-- CONDICION DEL JOIN -> ON
+-- CONSERVAR TODAS LAS FILAS IZQUIERDAS -> LEFT JOIN
+-- REEMPLAZAR NULL -> NVL
+-- CONTAR -> COUNT
+-- SUMAR -> SUM
+-- PROMEDIAR -> AVG
+-- MAYOR -> MAX
+-- MENOR -> MIN
+-- CONTAR MANUALMENTE -> CONTADOR
+-- SUMAR MANUALMENTE -> ACUMULADOR
+-- PROMEDIO MANUAL -> SUMA / CONTADOR
+-- VARIOS ELEMENTOS ORDENADOS -> VARRAY
+-- AGREGAR POSICION -> EXTEND
+-- MEDIR TEXTO -> LENGTH
+-- MOSTRAR RESULTADO -> DBMS_OUTPUT.PUT_LINE
+-- UNIR TEXTO Y VALORES -> ||
+-- PEDIR VALOR AL EJECUTAR -> &
+--
+-- ============================================================
